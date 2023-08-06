@@ -1,43 +1,34 @@
-import React from "react";
 import { createPortal } from 'react-dom'
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const rootModal = document.querySelector('#root-modal');
 
-export default class Modal extends React.Component {
+export default function Modal({ modalTogle, children }) {
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeydown);
+        return () => window.removeEventListener('keydown', handleKeydown);
+    }, []);
 
-    static propTypes = {
-        modalTogle: PropTypes.func.isRequired,
+    const handleKeydown = event => {
+        if (event.code === 'Escape') modalTogle()
     }
 
-    componentDidMount() {
-        window.addEventListener('keydown', this.handleKeydown)
+    const handleClick = (event) => {
+        if (event.currentTarget === event.target) modalTogle()
     }
 
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.handleKeydown)
-    }
+    return createPortal(
+        <div className="Overlay" onClick={handleClick}>
+            <div className="Modal">
+                {children}
+            </div>
+        </div>,
+        rootModal
+    )
+}
 
-    handleKeydown = event => {
-        if (event.code === 'Escape') {
-            this.props.modalTogle()
-        }
-    }
-
-    handleClick = (event) => {
-        if (event.currentTarget === event.target) {
-            this.props.modalTogle()
-        }
-    }
-
-    render() {
-        return createPortal(
-            <div className="Overlay" onClick={this.handleClick}>
-                <div className="Modal">
-                    {this.props.children}
-                </div>
-            </div>,
-            rootModal
-        )
-    }
+Modal.propTypes = {
+    modalTogle: PropTypes.func.isRequired,
+    children: PropTypes.object.isRequired
 }

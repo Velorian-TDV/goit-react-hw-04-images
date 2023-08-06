@@ -1,38 +1,30 @@
-import React from "react";
 import PropTypes from 'prop-types';
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 
-export default class ImageGallery extends React.Component {
-    static propTypes = {
-        getImages: PropTypes.func.isRequired,
-    }
-    
-    constructor(props) {
-        super(props);
+export default function ImageGallery({ getImages, modalTogle }) {
+    return (
+        <ul className="ImageGallery" >
+            {getImages().length === 0 ? null :
+                getImages().map(image => {
+                    const { id, webformatURL, largeImageURL, tags } = image;
 
-        this.images = this.props.getImages;
-    }
+                    return (
+                        <ImageGalleryItem
+                            key={id}
+                            id={id}
+                            src={webformatURL}
+                            alt={tags}
+                            dataLarge={largeImageURL}
+                            modalTogle={modalTogle}
+                        />
+                    )
+                })
+            }
+        </ul>
+    )
+}
 
-    render() {
-        return (
-            <ul className="ImageGallery" >
-                {this.images().length === 0 ? null :
-                    this.images().map(image => {
-                        const { id, webformatURL, largeImageURL, tags } = image;
-
-                        return (
-                            <ImageGalleryItem
-                                key={id}
-                                id={id}
-                                src={webformatURL}
-                                alt={tags}
-                                dataLarge={largeImageURL}
-                                modalTogle={this.props.modalTogle}
-                            />
-                        )
-                    })
-                }
-            </ul>
-        )
-    }
+ImageGallery.propTypes = {
+    getImages: PropTypes.func.isRequired,
+    modalTogle: PropTypes.func
 }
